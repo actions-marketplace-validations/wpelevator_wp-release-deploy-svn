@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.5.1 (2026-10-11)
+
+- Keep the release actions pinned to a stable wp-release version while the monorepo root resolves them to its local workspace; support explicit changelog insertion markers before the first version heading.
+
 ## 0.5.0 (2026-10-11)
 
 - Version mismatches are annotated on the file and line of each version that doesn't match, such as the `Version` header or the readme `Stable tag`, instead of one error with every mismatch.
