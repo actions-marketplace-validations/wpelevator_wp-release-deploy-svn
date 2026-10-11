@@ -151,7 +151,7 @@ The action runs `dist/index.js`, a single file bundled with esbuild that include
 
 ## Development
 
-The source is TypeScript in `src/`. `dist/` is git-ignored in the monorepo. `npm run build` (part of the monorepo `npm run build` and `npm run release`) bundles it with esbuild, reading `wp-release` from its TypeScript source through the `wpelevator-source` export condition so that it doesn't need a `wp-release` build first, and the split-push workflow commits it to the action's release repository, the same way the plugins ship their `build/` directories:
+The source is TypeScript in `src/`. `dist/` is git-ignored in the monorepo. `npm run build` (part of the monorepo `npm run build` and `npm run release`) bundles it with esbuild using the published `wp-release` package version declared by this action. The package dependency is updated after that `wp-release` version is published, then the split-push workflow commits the bundle to the action's release repository, the same way the plugins ship their `build/` directories:
 
 ```bash
 npm run build --workspace @wpelevator/wp-release-deploy-svn-action
