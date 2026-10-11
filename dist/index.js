@@ -2148,9 +2148,9 @@ var require_dispatcher_base = __commonJS({
       }
       close(callback) {
         if (callback === void 0) {
-          return new Promise((resolve10, reject) => {
+          return new Promise((resolve11, reject) => {
             this.close((err, data) => {
-              return err ? reject(err) : resolve10(data);
+              return err ? reject(err) : resolve11(data);
             });
           });
         }
@@ -2188,12 +2188,12 @@ var require_dispatcher_base = __commonJS({
           err = null;
         }
         if (callback === void 0) {
-          return new Promise((resolve10, reject) => {
+          return new Promise((resolve11, reject) => {
             this.destroy(err, (err2, data) => {
               return err2 ? (
                 /* istanbul ignore next: should never error */
                 reject(err2)
-              ) : resolve10(data);
+              ) : resolve11(data);
             });
           });
         }
@@ -4460,8 +4460,8 @@ var require_util2 = __commonJS({
     function createDeferredPromise() {
       let res;
       let rej;
-      const promise = new Promise((resolve10, reject) => {
-        res = resolve10;
+      const promise = new Promise((resolve11, reject) => {
+        res = resolve11;
         rej = reject;
       });
       return { promise, resolve: res, reject: rej };
@@ -6713,12 +6713,12 @@ upgrade: ${upgrade}\r
           cb();
         }
       }
-      const waitForDrain = () => new Promise((resolve10, reject) => {
+      const waitForDrain = () => new Promise((resolve11, reject) => {
         assert(callback === null);
         if (socket[kError]) {
           reject(socket[kError]);
         } else {
-          callback = resolve10;
+          callback = resolve11;
         }
       });
       socket.on("close", onDrain).on("drain", onDrain);
@@ -7390,12 +7390,12 @@ var require_client_h2 = __commonJS({
           cb();
         }
       }
-      const waitForDrain = () => new Promise((resolve10, reject) => {
+      const waitForDrain = () => new Promise((resolve11, reject) => {
         assert(callback === null);
         if (socket[kError]) {
           reject(socket[kError]);
         } else {
-          callback = resolve10;
+          callback = resolve11;
         }
       });
       h2stream.on("close", onDrain).on("drain", onDrain);
@@ -7873,16 +7873,16 @@ var require_client = __commonJS({
         return this[kNeedDrain] < 2;
       }
       async [kClose]() {
-        return new Promise((resolve10) => {
+        return new Promise((resolve11) => {
           if (this[kSize]) {
-            this[kClosedResolve] = resolve10;
+            this[kClosedResolve] = resolve11;
           } else {
-            resolve10(null);
+            resolve11(null);
           }
         });
       }
       async [kDestroy](err) {
-        return new Promise((resolve10) => {
+        return new Promise((resolve11) => {
           const requests = this[kQueue].splice(this[kPendingIdx]);
           for (let i = 0; i < requests.length; i++) {
             const request = requests[i];
@@ -7893,7 +7893,7 @@ var require_client = __commonJS({
               this[kClosedResolve]();
               this[kClosedResolve] = null;
             }
-            resolve10(null);
+            resolve11(null);
           };
           if (this[kHTTPContext]) {
             this[kHTTPContext].destroy(err, callback);
@@ -7944,7 +7944,7 @@ var require_client = __commonJS({
         });
       }
       try {
-        const socket = await new Promise((resolve10, reject) => {
+        const socket = await new Promise((resolve11, reject) => {
           client[kConnector]({
             host,
             hostname,
@@ -7956,7 +7956,7 @@ var require_client = __commonJS({
             if (err) {
               reject(err);
             } else {
-              resolve10(socket2);
+              resolve11(socket2);
             }
           });
         });
@@ -8292,8 +8292,8 @@ var require_pool_base = __commonJS({
         if (this[kQueue].isEmpty()) {
           await Promise.all(this[kClients].map((c) => c.close()));
         } else {
-          await new Promise((resolve10) => {
-            this[kClosedResolve] = resolve10;
+          await new Promise((resolve11) => {
+            this[kClosedResolve] = resolve11;
           });
         }
       }
@@ -9559,7 +9559,7 @@ var require_readable = __commonJS({
         if (this._readableState.closeEmitted) {
           return null;
         }
-        return await new Promise((resolve10, reject) => {
+        return await new Promise((resolve11, reject) => {
           if (this[kContentLength] > limit) {
             this.destroy(new AbortError());
           }
@@ -9572,7 +9572,7 @@ var require_readable = __commonJS({
             if (signal?.aborted) {
               reject(signal.reason ?? new AbortError());
             } else {
-              resolve10(null);
+              resolve11(null);
             }
           }).on("error", noop).on("data", function(chunk) {
             limit -= chunk.length;
@@ -9591,7 +9591,7 @@ var require_readable = __commonJS({
     }
     async function consume(stream, type) {
       assert(!stream[kConsume]);
-      return new Promise((resolve10, reject) => {
+      return new Promise((resolve11, reject) => {
         if (isUnusable(stream)) {
           const rState = stream._readableState;
           if (rState.destroyed && rState.closeEmitted === false) {
@@ -9608,7 +9608,7 @@ var require_readable = __commonJS({
             stream[kConsume] = {
               type,
               stream,
-              resolve: resolve10,
+              resolve: resolve11,
               reject,
               length: 0,
               body: []
@@ -9678,18 +9678,18 @@ var require_readable = __commonJS({
       return buffer;
     }
     function consumeEnd(consume2) {
-      const { type, body, resolve: resolve10, stream, length } = consume2;
+      const { type, body, resolve: resolve11, stream, length } = consume2;
       try {
         if (type === "text") {
-          resolve10(chunksDecode(body, length));
+          resolve11(chunksDecode(body, length));
         } else if (type === "json") {
-          resolve10(JSON.parse(chunksDecode(body, length)));
+          resolve11(JSON.parse(chunksDecode(body, length)));
         } else if (type === "arrayBuffer") {
-          resolve10(chunksConcat(body, length).buffer);
+          resolve11(chunksConcat(body, length).buffer);
         } else if (type === "blob") {
-          resolve10(new Blob(body, { type: stream[kContentType] }));
+          resolve11(new Blob(body, { type: stream[kContentType] }));
         } else if (type === "bytes") {
-          resolve10(chunksConcat(body, length));
+          resolve11(chunksConcat(body, length));
         }
         consumeFinish(consume2);
       } catch (err) {
@@ -9946,9 +9946,9 @@ var require_api_request = __commonJS({
     };
     function request(opts, callback) {
       if (callback === void 0) {
-        return new Promise((resolve10, reject) => {
+        return new Promise((resolve11, reject) => {
           request.call(this, opts, (err, data) => {
-            return err ? reject(err) : resolve10(data);
+            return err ? reject(err) : resolve11(data);
           });
         });
       }
@@ -10171,9 +10171,9 @@ var require_api_stream = __commonJS({
     };
     function stream(opts, factory, callback) {
       if (callback === void 0) {
-        return new Promise((resolve10, reject) => {
+        return new Promise((resolve11, reject) => {
           stream.call(this, opts, factory, (err, data) => {
-            return err ? reject(err) : resolve10(data);
+            return err ? reject(err) : resolve11(data);
           });
         });
       }
@@ -10458,9 +10458,9 @@ var require_api_upgrade = __commonJS({
     };
     function upgrade(opts, callback) {
       if (callback === void 0) {
-        return new Promise((resolve10, reject) => {
+        return new Promise((resolve11, reject) => {
           upgrade.call(this, opts, (err, data) => {
-            return err ? reject(err) : resolve10(data);
+            return err ? reject(err) : resolve11(data);
           });
         });
       }
@@ -10552,9 +10552,9 @@ var require_api_connect = __commonJS({
     };
     function connect(opts, callback) {
       if (callback === void 0) {
-        return new Promise((resolve10, reject) => {
+        return new Promise((resolve11, reject) => {
           connect.call(this, opts, (err, data) => {
-            return err ? reject(err) : resolve10(data);
+            return err ? reject(err) : resolve11(data);
           });
         });
       }
@@ -11100,7 +11100,7 @@ var require_mock_interceptor = __commonJS({
 var require_mock_client = __commonJS({
   "../../../node_modules/undici/lib/mock/mock-client.js"(exports, module) {
     "use strict";
-    var { promisify: promisify2 } = __require("node:util");
+    var { promisify: promisify3 } = __require("node:util");
     var Client = require_client();
     var { buildMockDispatch } = require_mock_utils();
     var {
@@ -11140,7 +11140,7 @@ var require_mock_client = __commonJS({
         return new MockInterceptor(opts, this[kDispatches]);
       }
       async [kClose]() {
-        await promisify2(this[kOriginalClose])();
+        await promisify3(this[kOriginalClose])();
         this[kConnected] = 0;
         this[kMockAgent][Symbols.kClients].delete(this[kOrigin]);
       }
@@ -11153,7 +11153,7 @@ var require_mock_client = __commonJS({
 var require_mock_pool = __commonJS({
   "../../../node_modules/undici/lib/mock/mock-pool.js"(exports, module) {
     "use strict";
-    var { promisify: promisify2 } = __require("node:util");
+    var { promisify: promisify3 } = __require("node:util");
     var Pool = require_pool();
     var { buildMockDispatch } = require_mock_utils();
     var {
@@ -11193,7 +11193,7 @@ var require_mock_pool = __commonJS({
         return new MockInterceptor(opts, this[kDispatches]);
       }
       async [kClose]() {
-        await promisify2(this[kOriginalClose])();
+        await promisify3(this[kOriginalClose])();
         this[kConnected] = 0;
         this[kMockAgent][Symbols.kClients].delete(this[kOrigin]);
       }
@@ -14416,7 +14416,7 @@ var require_fetch = __commonJS({
       function dispatch({ body }) {
         const url = requestCurrentURL(request);
         const agent = fetchParams.controller.dispatcher;
-        return new Promise((resolve10, reject) => agent.dispatch(
+        return new Promise((resolve11, reject) => agent.dispatch(
           {
             path: url.pathname + url.search,
             origin: url.origin,
@@ -14492,7 +14492,7 @@ var require_fetch = __commonJS({
                 }
               }
               const onError = this.onError.bind(this);
-              resolve10({
+              resolve11({
                 status,
                 statusText,
                 headersList,
@@ -14538,7 +14538,7 @@ var require_fetch = __commonJS({
               for (let i = 0; i < rawHeaders.length; i += 2) {
                 headersList.append(bufferToLowerCasedHeaderName(rawHeaders[i]), rawHeaders[i + 1].toString("latin1"), true);
               }
-              resolve10({
+              resolve11({
                 status,
                 statusText: STATUS_CODES[status],
                 headersList,
@@ -18269,8 +18269,8 @@ var require_util8 = __commonJS({
       return true;
     }
     function delay(ms) {
-      return new Promise((resolve10) => {
-        setTimeout(resolve10, ms).unref();
+      return new Promise((resolve11) => {
+        setTimeout(resolve11, ms).unref();
       });
     }
     module.exports = {
@@ -20905,9 +20905,9 @@ var require_pend = __commonJS({
   }
 });
 
-// node_modules/yauzl/fd-slicer.js
+// ../../js/wp-release/node_modules/yauzl/fd-slicer.js
 var require_fd_slicer = __commonJS({
-  "node_modules/yauzl/fd-slicer.js"(exports) {
+  "../../js/wp-release/node_modules/yauzl/fd-slicer.js"(exports) {
     var fs3 = __require("fs");
     var util = __require("util");
     var stream = __require("stream");
@@ -21062,9 +21062,9 @@ var require_fd_slicer = __commonJS({
   }
 });
 
-// node_modules/yauzl/crc32.js
+// ../../js/wp-release/node_modules/yauzl/crc32.js
 var require_crc32 = __commonJS({
-  "node_modules/yauzl/crc32.js"(exports, module) {
+  "../../js/wp-release/node_modules/yauzl/crc32.js"(exports, module) {
     var CRC_TABLE = new Int32Array([
       0,
       1996959894,
@@ -21334,9 +21334,9 @@ var require_crc32 = __commonJS({
   }
 });
 
-// node_modules/yauzl/index.js
+// ../../js/wp-release/node_modules/yauzl/index.js
 var require_yauzl = __commonJS({
-  "node_modules/yauzl/index.js"(exports) {
+  "../../js/wp-release/node_modules/yauzl/index.js"(exports) {
     var fs3 = __require("fs");
     var zlib = __require("zlib");
     var fd_slicer = require_fd_slicer();
@@ -21363,34 +21363,34 @@ var require_yauzl = __commonJS({
     exports.LocalFileHeader = LocalFileHeader;
     exports.RandomAccessReader = RandomAccessReader;
     function openPromise(path, options2) {
-      return new Promise((resolve10, reject) => {
+      return new Promise((resolve11, reject) => {
         open3(path, { ...options2, lazyEntries: true }, function(err, zipfile) {
           if (err) return reject(err);
-          resolve10(zipfile);
+          resolve11(zipfile);
         });
       });
     }
     function fromFdPromise(fd, options2) {
-      return new Promise((resolve10, reject) => {
+      return new Promise((resolve11, reject) => {
         fromFd(fd, { ...options2, lazyEntries: true }, function(err, zipfile) {
           if (err) return reject(err);
-          resolve10(zipfile);
+          resolve11(zipfile);
         });
       });
     }
     function fromBufferPromise(buffer, options2) {
-      return new Promise((resolve10, reject) => {
+      return new Promise((resolve11, reject) => {
         fromBuffer(buffer, { ...options2, lazyEntries: true }, function(err, zipfile) {
           if (err) return reject(err);
-          resolve10(zipfile);
+          resolve11(zipfile);
         });
       });
     }
     function fromRandomAccessReaderPromise(reader, totalSize, options2) {
-      return new Promise((resolve10, reject) => {
+      return new Promise((resolve11, reject) => {
         fromRandomAccessReader(reader, totalSize, { ...options2, lazyEntries: true }, function(err, zipfile) {
           if (err) return reject(err);
-          resolve10(zipfile);
+          resolve11(zipfile);
         });
       });
     }
@@ -21674,15 +21674,15 @@ var require_yauzl = __commonJS({
         if (self.autoClose) self.close();
       }
       function onEntry(entry) {
-        let { resolve: resolve10 } = pendingResolveReject;
+        let { resolve: resolve11 } = pendingResolveReject;
         pendingResolveReject = null;
-        resolve10({ value: entry });
+        resolve11({ value: entry });
       }
       function onEnd() {
-        let { resolve: resolve10 } = pendingResolveReject;
+        let { resolve: resolve11 } = pendingResolveReject;
         pendingResolveReject = null;
         cleanup();
-        resolve10({ done: true });
+        resolve11({ done: true });
       }
       function onError(err) {
         let { reject } = pendingResolveReject;
@@ -21695,9 +21695,9 @@ var require_yauzl = __commonJS({
           return this;
         },
         next() {
-          const promise = new Promise((resolve10, reject) => {
+          const promise = new Promise((resolve11, reject) => {
             if (pendingResolveReject != null) throw new Error("next() called before previous Promise was resolved.");
-            pendingResolveReject = { resolve: resolve10, reject };
+            pendingResolveReject = { resolve: resolve11, reject };
           });
           self.readEntry();
           return promise;
@@ -21886,26 +21886,26 @@ var require_yauzl = __commonJS({
       });
     };
     ZipFile.prototype.openReadStreamPromise = function(entry, options2) {
-      return new Promise((resolve10, reject) => {
+      return new Promise((resolve11, reject) => {
         this.openReadStream(entry, options2, function(err, readStream) {
           if (err) return reject(err);
-          resolve10(readStream);
+          resolve11(readStream);
         });
       });
     };
     ZipFile.prototype.openReadStreamLowLevelPromise = function(fileDataStart, compressedSize, relativeStart, relativeEnd, decompress, uncompressedSize) {
-      return new Promise((resolve10, reject) => {
+      return new Promise((resolve11, reject) => {
         this.openReadStream(fileDataStart, compressedSize, relativeStart, relativeEnd, decompress, uncompressedSize, function(err, readStream) {
           if (err) return reject(err);
-          resolve10(readStream);
+          resolve11(readStream);
         });
       });
     };
     ZipFile.prototype.readLocalFileHeaderPromise = function(entry, options2) {
-      return new Promise((resolve10, reject) => {
+      return new Promise((resolve11, reject) => {
         this.readLocalFileHeader(entry, options2, function(err, localFileHeader) {
           if (err) return reject(err);
-          resolve10(localFileHeader);
+          resolve11(localFileHeader);
         });
       });
     };
@@ -22342,11 +22342,11 @@ import { EOL as EOL3 } from "os";
 import { constants, promises } from "fs";
 var __awaiter = function(thisArg, _arguments, P, generator) {
   function adopt(value) {
-    return value instanceof P ? value : new P(function(resolve10) {
-      resolve10(value);
+    return value instanceof P ? value : new P(function(resolve11) {
+      resolve11(value);
     });
   }
-  return new (P || (P = Promise))(function(resolve10, reject) {
+  return new (P || (P = Promise))(function(resolve11, reject) {
     function fulfilled(value) {
       try {
         step(generator.next(value));
@@ -22362,7 +22362,7 @@ var __awaiter = function(thisArg, _arguments, P, generator) {
       }
     }
     function step(result) {
-      result.done ? resolve10(result.value) : adopt(result.value).then(fulfilled, rejected);
+      result.done ? resolve11(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
@@ -22679,17 +22679,17 @@ function info(message) {
   process.stdout.write(message + os4.EOL);
 }
 
-// node_modules/@wpelevator/wp-release/dist/commands/zip.js
+// ../../js/wp-release/dist/commands/zip.js
 import { existsSync as existsSync3 } from "node:fs";
 import { basename as basename2, resolve as resolve5 } from "node:path";
 
-// node_modules/@wpelevator/wp-release/dist/checksums.js
+// ../../js/wp-release/dist/checksums.js
 import { createReadStream } from "node:fs";
 import { mkdir as mkdir2, readFile as readFile2, writeFile as writeFile2 } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { dirname, join as join2 } from "node:path";
 
-// node_modules/@wpelevator/wp-release/dist/errors.js
+// ../../js/wp-release/dist/errors.js
 var ValidationError = class extends Error {
   name = "ValidationError";
   exitCode = 2;
@@ -22706,7 +22706,7 @@ var CredentialsError = class _CredentialsError extends Error {
   exitCode = _CredentialsError.EXIT_CODE;
 };
 
-// node_modules/@wpelevator/wp-release/dist/file-selection.js
+// ../../js/wp-release/dist/file-selection.js
 var import_ignore = __toESM(require_ignore(), 1);
 import { readdir as readdir2, readFile } from "node:fs/promises";
 import { join, posix, resolve } from "node:path";
@@ -22779,7 +22779,7 @@ async function findEntryFiles(sourceDir, path, entry, rules) {
   return [];
 }
 
-// node_modules/@wpelevator/wp-release/dist/checksums.js
+// ../../js/wp-release/dist/checksums.js
 var CHECKSUMS_EXTENSION = ".checksums.json";
 var CHECKSUM_ALGORITHMS = ["md5", "sha256"];
 var PACKAGE_TYPES = ["plugin", "theme"];
@@ -22892,7 +22892,7 @@ async function verifyChecksums(input) {
   return compareChecksums(expected, await hashFiles(sourceDir, files));
 }
 
-// node_modules/@wpelevator/wp-release/dist/filename.js
+// ../../js/wp-release/dist/filename.js
 var FILENAME_FORMAT = "{slug}.{version}";
 function formatFilename(format, values) {
   const { slug, version = null } = values;
@@ -22905,7 +22905,7 @@ function formatFilename(format, values) {
   return format.replaceAll("{slug}", slug).replaceAll("{version}", version ?? "");
 }
 
-// node_modules/@wpelevator/wp-release/dist/package-meta.js
+// ../../js/wp-release/dist/package-meta.js
 import { open as open2, readdir as readdir3, readFile as readFile3 } from "node:fs/promises";
 import { join as join3 } from "node:path";
 var HEADER_BYTES = 8192;
@@ -23080,10 +23080,10 @@ async function readReadme(dir, name) {
   return null;
 }
 
-// node_modules/@wpelevator/wp-release/dist/summary.js
+// ../../js/wp-release/dist/summary.js
 import { isAbsolute, relative, resolve as resolve3, sep } from "node:path";
 
-// node_modules/@wpelevator/wp-release/dist/deploy-options.js
+// ../../js/wp-release/dist/deploy-options.js
 import { existsSync as existsSync2 } from "node:fs";
 import { basename, resolve as resolve2 } from "node:path";
 var SVN_URL = "https://plugins.svn.wordpress.org/{slug}/";
@@ -23185,7 +23185,55 @@ function resolveDeployOptions(input = {}) {
   return options2;
 }
 
-// node_modules/@wpelevator/wp-release/dist/summary.js
+// ../../js/wp-release/dist/git.js
+import { spawn } from "node:child_process";
+function redactUrls(text) {
+  return text.replace(/(\w+:\/\/)[^/@\s]+@/g, "$1***@");
+}
+var GitError = class extends Error {
+  name = "GitError";
+  exitCode = 1;
+  stderr;
+  /**
+   * @param message Error message.
+   * @param stderr  Standard error of the command.
+   */
+  constructor(message, stderr = "") {
+    super(redactUrls(message));
+    this.stderr = redactUrls(stderr);
+  }
+};
+function createGitRunner(binary = "git") {
+  return ({ args, cwd, input, env = {} }) => new Promise((resolve11, reject) => {
+    const child = spawn(binary, args, {
+      cwd,
+      env: {
+        ...process.env,
+        LC_ALL: "C",
+        GIT_TERMINAL_PROMPT: "0",
+        ...env
+      },
+      stdio: ["pipe", "pipe", "pipe"]
+    });
+    const output = { stdout: "", stderr: "" };
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (data) => output.stdout += data);
+    child.stderr.on("data", (data) => output.stderr += data);
+    child.on("error", (error) => reject(new GitError(`Can't run ${binary}: ${error.message}. Install git.`)));
+    child.on("close", (code) => {
+      if (0 === code) {
+        resolve11(output);
+      } else {
+        reject(new GitError(`git ${args[0]} failed: ${output.stderr.trim()}`, output.stderr));
+      }
+    });
+    child.stdin.on("error", () => void 0);
+    child.stdin.end(input ?? "");
+  });
+}
+
+// ../../js/wp-release/dist/summary.js
 var WPORG_SVN_HOST = "https://plugins.svn.wordpress.org/";
 var SUMMARY_LIST_LIMIT = 100;
 function getWorkspacePath(workspace, file) {
@@ -23323,8 +23371,23 @@ function getDeploySummary(input) {
 \u2026 and ${changes.length - SUMMARY_LIST_LIMIT} more` : ""))
   ]);
 }
+function getGitDeploySummary(context, input) {
+  const { revision, created, outdated, planned, files, dryRun } = input;
+  const refs = planned.map(formatCode).join(", ");
+  const pushedText = dryRun ? `Dry run, skipped pushing ${refs}.` : refs;
+  const reused = outdated ? "the previous release" : "the same files as the previous release";
+  return joinBlocks([
+    "### Deploy to Git",
+    formatList([
+      `**Repository:** ${formatCode(redactUrls(input.gitUrl))}`,
+      `**Release:** ${formatCode(revision)}, ${created ? `${files} files` : reused}`,
+      `**Pushed:** ${planned.length ? pushedText : "nothing, no changes"}`,
+      outdated ? "**Branch:** not moved, the previous release has newer source history" : ""
+    ].filter(Boolean))
+  ]);
+}
 
-// node_modules/@wpelevator/wp-release/dist/zip.js
+// ../../js/wp-release/dist/zip.js
 var import_yazl = __toESM(require_yazl(), 1);
 import { createWriteStream } from "node:fs";
 import { rm as rm2 } from "node:fs/promises";
@@ -23359,11 +23422,11 @@ function isValidRootFolder(name) {
   return !/[\\/]/.test(name) && "." !== name && ".." !== name;
 }
 
-// node_modules/@wpelevator/wp-release/dist/commands/args.js
+// ../../js/wp-release/dist/commands/args.js
 import { stat as stat2 } from "node:fs/promises";
 import { isAbsolute as isAbsolute2, relative as relative2, resolve as resolve4 } from "node:path";
 
-// node_modules/@wpelevator/wp-release/dist/signing.js
+// ../../js/wp-release/dist/signing.js
 import { createHash as createHash2, createPrivateKey, createPublicKey, sign, verify } from "node:crypto";
 import { createReadStream as createReadStream2 } from "node:fs";
 import { readFile as readFile4, writeFile as writeFile3 } from "node:fs/promises";
@@ -23432,7 +23495,7 @@ async function verifyFileSignature(path, signaturePath, publicKey) {
   return signatures.some((signature) => verify(null, digest, publicKey, Buffer.from(signature, "base64")));
 }
 
-// node_modules/@wpelevator/wp-release/dist/commands/command.js
+// ../../js/wp-release/dist/commands/command.js
 function getString(values, name) {
   const value = values[name];
   return "string" === typeof value ? value : void 0;
@@ -23444,7 +23507,7 @@ function getStrings(values, name) {
   return [values[name]].flat().filter((value) => "string" === typeof value);
 }
 
-// node_modules/@wpelevator/wp-release/dist/commands/args.js
+// ../../js/wp-release/dist/commands/args.js
 var fileSelectionArgs = {
   distignore: { type: "string" },
   "no-distignore": { type: "boolean" },
@@ -23497,7 +23560,7 @@ function resolveOutput(input) {
   return resolve4(input.cwd, input.output ?? input.filename);
 }
 
-// node_modules/@wpelevator/wp-release/dist/commands/zip.js
+// ../../js/wp-release/dist/commands/zip.js
 var ZIP_EXTENSION = ".zip";
 function getChecksumsPath(zipPath) {
   const name = zipPath.endsWith(ZIP_EXTENSION) ? zipPath.slice(0, -ZIP_EXTENSION.length) : zipPath;
@@ -23606,7 +23669,7 @@ always give the same ZIP.`,
   }
 };
 
-// node_modules/@wpelevator/wp-release/dist/commands/checksums.js
+// ../../js/wp-release/dist/commands/checksums.js
 import { basename as basename3, resolve as resolve6 } from "node:path";
 var checksums_default = {
   name: "checksums",
@@ -23679,7 +23742,7 @@ matches the ZIP contents.`,
   }
 };
 
-// node_modules/@wpelevator/wp-release/dist/commands/sign.js
+// ../../js/wp-release/dist/commands/sign.js
 import { resolve as resolve7 } from "node:path";
 import { stat as stat3 } from "node:fs/promises";
 var sign_default = {
@@ -23733,13 +23796,13 @@ that belongs to the signing key.`,
   }
 };
 
-// node_modules/@wpelevator/wp-release/dist/commands/verify.js
+// ../../js/wp-release/dist/commands/verify.js
 import { existsSync as existsSync4 } from "node:fs";
 import { mkdir as mkdir4, mkdtemp, readFile as readFile5, rm as rm3 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename as basename4, isAbsolute as isAbsolute3, join as join6, posix as posix3, resolve as resolve8 } from "node:path";
 
-// node_modules/@wpelevator/wp-release/dist/download.js
+// ../../js/wp-release/dist/download.js
 import { createWriteStream as createWriteStream2 } from "node:fs";
 import { Readable } from "node:stream";
 import { pipeline as pipeline2 } from "node:stream/promises";
@@ -23754,7 +23817,7 @@ async function downloadFile(url, path) {
   await pipeline2(Readable.fromWeb(response.body), createWriteStream2(path));
 }
 
-// node_modules/@wpelevator/wp-release/dist/report.js
+// ../../js/wp-release/dist/report.js
 function logProblems(logger2, title, problems, description = "") {
   problems.forEach(({ message, ...annotation }) => logger2.error(message, annotation));
   logger2.summary((context) => getProblemsSummary(context, title, problems, description));
@@ -23770,7 +23833,7 @@ function logError(logger2, error, title = "wp-release") {
   }
 }
 
-// node_modules/@wpelevator/wp-release/dist/unzip.js
+// ../../js/wp-release/dist/unzip.js
 var import_yauzl = __toESM(require_yauzl(), 1);
 import { createWriteStream as createWriteStream3 } from "node:fs";
 import { mkdir as mkdir3 } from "node:fs/promises";
@@ -23778,13 +23841,13 @@ import { dirname as dirname2, join as join5 } from "node:path";
 import { pipeline as pipeline3 } from "node:stream/promises";
 var SYMLINK_FILE_TYPE = 10;
 async function readEntries(zipPath, onEntry) {
-  const zip = await new Promise((resolve10, reject) => import_yauzl.default.open(zipPath, { lazyEntries: true, autoClose: false }, (error, file) => error ? reject(error) : resolve10(file))).catch((error) => {
+  const zip = await new Promise((resolve11, reject) => import_yauzl.default.open(zipPath, { lazyEntries: true, autoClose: false }, (error, file) => error ? reject(error) : resolve11(file))).catch((error) => {
     throw new ValidationError(`${zipPath} isn't a valid ZIP file: ${error.message}`);
   });
   try {
-    await new Promise((resolve10, reject) => {
+    await new Promise((resolve11, reject) => {
       zip.on("entry", (entry) => onEntry(entry, zip).then(() => zip.readEntry(), reject));
-      zip.on("end", resolve10);
+      zip.on("end", resolve11);
       zip.on("error", (error) => reject(new ValidationError(`Can't read ${zipPath}: ${error.message}`)));
       zip.readEntry();
     });
@@ -23845,10 +23908,10 @@ ${errors.join("\n")}`);
   return files.sort();
 }
 function openReadStream(zip, entry) {
-  return new Promise((resolve10, reject) => zip.openReadStream(entry, (error, stream) => error ? reject(error) : resolve10(stream)));
+  return new Promise((resolve11, reject) => zip.openReadStream(entry, (error, stream) => error ? reject(error) : resolve11(stream)));
 }
 
-// node_modules/@wpelevator/wp-release/dist/commands/verify.js
+// ../../js/wp-release/dist/commands/verify.js
 async function checkSignature(checksumsPath, publicKey) {
   const signaturePath = checksumsPath + SIGNATURE_EXTENSION;
   if (!existsSync4(signaturePath)) {
@@ -24109,10 +24172,10 @@ where the copies are looked for.`,
   }
 };
 
-// node_modules/@wpelevator/wp-release/dist/commands/version-check.js
+// ../../js/wp-release/dist/commands/version-check.js
 import { basename as basename5, resolve as resolve9 } from "node:path";
 
-// node_modules/@wpelevator/wp-release/dist/version-check.js
+// ../../js/wp-release/dist/version-check.js
 var import_ignore2 = __toESM(require_ignore(), 1);
 import { readFile as readFile6 } from "node:fs/promises";
 import { join as join7 } from "node:path";
@@ -24265,7 +24328,7 @@ async function findVersionMismatches(input) {
   };
 }
 
-// node_modules/@wpelevator/wp-release/dist/commands/version-check.js
+// ../../js/wp-release/dist/commands/version-check.js
 function getGitTag(gitTag) {
   const ref = process.env.GITHUB_REF;
   return gitTag ?? (isTagRef(ref) ? ref ?? null : null);
@@ -24335,14 +24398,14 @@ no Stable tag, so it's only checked for plugins.`,
   }
 };
 
-// node_modules/@wpelevator/wp-release/dist/svn-deploy.js
+// ../../js/wp-release/dist/svn-deploy.js
 var import_ignore4 = __toESM(require_ignore(), 1);
 import { existsSync as existsSync5 } from "node:fs";
 import { mkdir as mkdir6, mkdtemp as mkdtemp2, rm as rm5 } from "node:fs/promises";
 import { tmpdir as tmpdir2 } from "node:os";
 import { extname, join as join9, posix as posix4 } from "node:path";
 
-// node_modules/@wpelevator/wp-release/dist/logger.js
+// ../../js/wp-release/dist/logger.js
 var TextWriter = class {
   stdout;
   stderr;
@@ -24441,8 +24504,8 @@ var Logger = class {
   }
 };
 
-// node_modules/@wpelevator/wp-release/dist/svn.js
-import { spawn } from "node:child_process";
+// ../../js/wp-release/dist/svn.js
+import { spawn as spawn2 } from "node:child_process";
 var SvnError = class extends Error {
   name = "SvnError";
   exitCode;
@@ -24465,8 +24528,8 @@ function toSvnPath(path) {
   return path.includes("@") ? `${path}@` : path;
 }
 function createSvnRunner(binary = "svn") {
-  return ({ args, cwd, input }) => new Promise((resolve10, reject) => {
-    const child = spawn(binary, args, {
+  return ({ args, cwd, input }) => new Promise((resolve11, reject) => {
+    const child = spawn2(binary, args, {
       cwd,
       env: { ...process.env, LC_ALL: "C" },
       stdio: ["pipe", "pipe", "pipe"]
@@ -24479,7 +24542,7 @@ function createSvnRunner(binary = "svn") {
     child.on("error", (error) => reject(new SvnError(`Can't run ${binary}: ${error.message}. Install the Subversion command line client.`)));
     child.on("close", (code) => {
       if (0 === code) {
-        resolve10(output);
+        resolve11(output);
       } else {
         reject(new SvnError(`svn ${args[0]} failed: ${output.stderr.trim()}`, output.stderr));
       }
@@ -24694,7 +24757,7 @@ var Svn = class {
   }
 };
 
-// node_modules/@wpelevator/wp-release/dist/sync.js
+// ../../js/wp-release/dist/sync.js
 var import_ignore3 = __toESM(require_ignore(), 1);
 import { copyFile as copyFile2, mkdir as mkdir5, readdir as readdir4, readFile as readFile7, rm as rm4, rmdir as rmdir2, stat as stat4 } from "node:fs/promises";
 import { dirname as dirname3, join as join8 } from "node:path";
@@ -24753,7 +24816,7 @@ async function syncDirectory(input) {
   return { copied, deleted };
 }
 
-// node_modules/@wpelevator/wp-release/dist/svn-deploy.js
+// ../../js/wp-release/dist/svn-deploy.js
 var ASSET_MIME_TYPES = {
   ".png": "image/png",
   ".jpg": "image/jpeg",
@@ -25226,7 +25289,7 @@ var SvnDeploy = class {
   }
 };
 
-// node_modules/@wpelevator/wp-release/dist/commands/deploy-svn.js
+// ../../js/wp-release/dist/commands/deploy-svn.js
 function getDeployInputFromArgs(input) {
   const { values, positionals, cwd } = input;
   const flag = (name) => getBoolean(values, name) || void 0;
@@ -25321,7 +25384,431 @@ Examples:
   }
 };
 
-// node_modules/@wpelevator/wp-release/dist/github-actions-writer.js
+// ../../js/wp-release/dist/git-deploy.js
+import { mkdtemp as mkdtemp3, rm as rm6, stat as stat5 } from "node:fs/promises";
+import { tmpdir as tmpdir3 } from "node:os";
+import { join as join10, resolve as resolve10 } from "node:path";
+function isValidRefName(name) {
+  return /^[^\s~^:?*[\\]+$/.test(name) && !/(^[-/.]|\/\.|\.\.|\/\/|@\{|\.lock$|[/.]$)/.test(name);
+}
+function resolveGitDeployOptions(input = {}) {
+  const cwd = resolve10(input.cwd ?? process.cwd());
+  const sourceDir = resolve10(cwd, input.sourceDir || ".");
+  const names = [
+    ["branch", input.branch],
+    ["tag", input.tag]
+  ].filter(([, name]) => name && !isValidRefName(name));
+  if (!input.gitUrl) {
+    throw new ValidationError("Pass the URL of the repository to deploy to.");
+  }
+  if (names.length) {
+    throw new ValidationError(names.map(([kind, name]) => `Invalid ${kind} "${name}".`).join("\n"));
+  }
+  return {
+    cwd,
+    sourceDir,
+    gitUrl: input.gitUrl,
+    branch: input.branch || null,
+    tag: input.tag || null,
+    splitPrefix: input.splitPrefix || null,
+    sourceRef: input.sourceRef || "HEAD",
+    message: input.message || null,
+    dryRun: Boolean(input.dryRun),
+    ...resolveFileSelection({
+      cwd,
+      sourceDir,
+      distignore: input.distignore,
+      exclude: input.exclude
+    })
+  };
+}
+var GitDeploy = class {
+  options;
+  logger;
+  runner;
+  repoRoot = null;
+  /**
+   * @param options Options from resolveGitDeployOptions().
+   * @param logger  Logger for the progress.
+   * @param runner  Git command runner, replaceable in tests.
+   */
+  constructor(options2, logger2 = new Logger(), runner = createGitRunner()) {
+    this.options = options2;
+    this.logger = logger2;
+    this.runner = runner;
+  }
+  /**
+   * Whether the options ask for any push.
+   *
+   * @return True with a branch or a tag.
+   */
+  hasWrites() {
+    return Boolean(this.options.branch || this.options.tag);
+  }
+  /**
+   * Create the release commit and push it.
+   *
+   * @return Release, previous release and the pushed refs.
+   */
+  async run() {
+    const result = {
+      revision: null,
+      previous: null,
+      created: false,
+      outdated: false,
+      planned: [],
+      pushed: [],
+      files: 0
+    };
+    if (this.hasWrites()) {
+      this.logger.info(`Deploying ${this.options.sourceDir} to ${redactUrls(this.options.gitUrl)}`);
+      const { tree, files } = await this.createTree();
+      const previous = await this.fetchPrevious();
+      const tagged = this.options.tag ? await this.checkTag(tree) : null;
+      const { revision, created, outdated } = tagged ? { revision: tagged, created: false, outdated: false } : await this.createRelease(tree, previous);
+      const planned = this.getRefsToPush(revision, previous, tagged, outdated);
+      const pushed = await this.push(revision, planned);
+      const deployed = {
+        revision,
+        previous,
+        created,
+        outdated,
+        planned,
+        pushed,
+        files
+      };
+      this.logger.summary((context) => getGitDeploySummary(context, {
+        ...deployed,
+        gitUrl: this.options.gitUrl,
+        dryRun: this.options.dryRun
+      }));
+      return deployed;
+    }
+    this.logger.notice("Nothing to deploy. Pass a branch or a tag.");
+    return result;
+  }
+  /**
+   * Write the selected files to the object database of the source
+   * repository and create a tree of them, with a temporary index so that
+   * the working tree and the index of the repository are left alone.
+   *
+   * @return Tree hash and the number of files.
+   * @throws {ValidationError} When no files are selected, or a file name has a line break.
+   */
+  async createTree() {
+    const { sourceDir } = this.options;
+    const rules = await loadFileRules(this.options);
+    const files = await selectFiles(sourceDir, rules);
+    if (!files.length) {
+      throw new ValidationError(`No files to deploy in ${sourceDir}.`);
+    }
+    const unsupported = files.filter((file) => /[\n\r]|^"/.test(file));
+    if (unsupported.length) {
+      throw new ValidationError(`File names with line breaks or a leading quote can't be deployed: ${unsupported.map((file) => JSON.stringify(file)).join(", ")}.`);
+    }
+    const hashes = await this.git({
+      args: ["hash-object", "-w", "--no-filters", "--stdin-paths"],
+      input: files.map((file) => join10(sourceDir, file)).join("\n")
+    });
+    const modes = await Promise.all(files.map(async (file) => (
+      // eslint-disable-next-line no-bitwise
+      (await stat5(join10(sourceDir, file))).mode & 73 ? "100755" : "100644"
+    )));
+    const shas = hashes.split("\n");
+    const indexDir = await mkdtemp3(join10(tmpdir3(), "wp-release-git-"));
+    const env = { GIT_INDEX_FILE: join10(indexDir, "index") };
+    try {
+      await this.git({
+        args: ["update-index", "--add", "--index-info"],
+        input: files.map((file, index) => `${modes[index]} ${shas[index]}	${file}`).join("\n"),
+        env
+      });
+      const tree = await this.git({ args: ["write-tree"], env });
+      this.logger.debug(`Created tree ${tree} of ${files.length} files.`);
+      return { tree, files: files.length };
+    } finally {
+      await rm6(indexDir, { recursive: true, force: true });
+    }
+  }
+  /**
+   * Fetch the previous release: the branch, or for a tag-only deploy the
+   * default branch of the repository.
+   *
+   * @return Commit hash, or null when the repository has no such branch yet.
+   */
+  async fetchPrevious() {
+    const { gitUrl, branch } = this.options;
+    const ref = branch ? `refs/heads/${branch}` : "HEAD";
+    const remote = await this.git({ args: ["ls-remote", gitUrl, ref] });
+    const found = remote.split("\n").some((line) => line.endsWith(`	${ref}`));
+    return found ? this.fetchCommit(ref) : null;
+  }
+  /**
+   * Fetch a ref of the repository.
+   *
+   * @param ref Branch or tag ref, or HEAD.
+   * @return Commit hash, with a tag peeled to its commit.
+   */
+  async fetchCommit(ref) {
+    await this.git({
+      args: ["fetch", "--no-tags", "--quiet", this.options.gitUrl, ref]
+    });
+    return this.git({ args: ["rev-parse", "FETCH_HEAD^{commit}"] });
+  }
+  /**
+   * Get the release commit. When the files are the same as in the previous
+   * release, that release is reused. When the previous release on the
+   * branch already has newer source history, like when an older build runs
+   * again, the branch isn't moved: only a tag gets a new release commit.
+   *
+   * @param tree     Tree of the released files.
+   * @param previous Previous release, or null for the first one.
+   * @return Release commit, whether it was created and whether the source is outdated.
+   */
+  async createRelease(tree, previous) {
+    const previousTree = previous ? await this.git({
+      args: ["rev-parse", `${previous}^{tree}`]
+    }) : null;
+    if (previous && tree === previousTree) {
+      this.logger.notice("The files are the same as in the previous release.");
+      return { revision: previous, created: false, outdated: false };
+    }
+    const source = await this.getSourceHistory();
+    const outdated = this.options.branch && previous ? await this.isOutdated(source, previous) : false;
+    if (outdated) {
+      this.logger.notice(`The release on ${this.options.branch} already has newer source history than ${source}, so the branch isn't moved.`);
+    }
+    if (outdated && previous && !this.options.tag) {
+      return { revision: previous, created: false, outdated };
+    }
+    const parents = [previous, source].filter((parent) => Boolean(parent));
+    const revision = await this.git({
+      args: [
+        "commit-tree",
+        tree,
+        ...parents.flatMap((parent) => ["-p", parent]),
+        "-m",
+        this.options.message ?? await this.getDefaultMessage()
+      ]
+    });
+    this.logger.notice(`Created release ${revision}.`);
+    return { revision, created: true, outdated };
+  }
+  /**
+   * Check whether a release was made from newer source history: the source
+   * history of the release, its last parent, already has the source as an
+   * older commit. The same source, a newer one, including a revert, and
+   * unrelated history aren't outdated. With splitPrefix, git subtree split
+   * creates the same commits for the same history, so the split of an older
+   * build is part of the split of a newer one.
+   *
+   * @param source   Source history from getSourceHistory().
+   * @param previous Previous release.
+   * @return Whether the source is older than the source of the release.
+   */
+  async isOutdated(source, previous) {
+    const [, ...parents] = (await this.git({
+      args: ["rev-list", "--parents", "--max-count=1", previous]
+    })).split(" ");
+    const released = parents.at(-1);
+    const unreleased = released && released !== source ? await this.git({
+      args: [
+        "rev-list",
+        "--max-count=1",
+        source,
+        "--not",
+        released
+      ]
+    }) : source;
+    return "" === unreleased;
+  }
+  /**
+   * Get the source history parent of a release: the source commit, or the
+   * history of splitPrefix from git subtree split.
+   *
+   * @return Commit hash.
+   */
+  async getSourceHistory() {
+    const { splitPrefix, sourceRef } = this.options;
+    return this.git({
+      args: splitPrefix ? ["subtree", "split", `--prefix=${splitPrefix}`, sourceRef] : ["rev-parse", `${sourceRef}^{commit}`]
+    });
+  }
+  /**
+   * Check the tag in the repository before anything is pushed. Tags are
+   * never replaced, so a tag with other files is an error. A tag with the
+   * same files is the release, which makes running a tag release again a
+   * no-op, also when the release commit was created on top of an older
+   * branch tip. To release a tag again, delete it in the repository first.
+   *
+   * @param  tree Tree of the released files.
+   * @return Tagged commit when the tag has the same files, null without the tag.
+   * @throws {ValidationError} When the tag has other files.
+   */
+  async checkTag(tree) {
+    const { gitUrl, tag } = this.options;
+    const ref = `refs/tags/${tag}`;
+    const remote = await this.git({
+      args: ["ls-remote", "--tags", gitUrl, ref]
+    });
+    const found = remote.split("\n").some((line) => line.endsWith(`	${ref}`));
+    const tagged = found ? await this.fetchCommit(ref) : null;
+    const taggedTree = tagged ? await this.git({ args: ["rev-parse", `${tagged}^{tree}`] }) : null;
+    if (tagged && taggedTree !== tree) {
+      throw new ValidationError(`Tag ${tag} already exists in ${redactUrls(gitUrl)} with other files. Tags are never replaced: delete the tag in the repository to release it again.`);
+    }
+    if (tagged) {
+      this.logger.notice(`Tag ${tag} already has these files, nothing to push.`);
+    }
+    return tagged;
+  }
+  /**
+   * Get the refs to push: the branch, when the release moves it and the
+   * source isn't outdated, and the tag, unless it already exists with these
+   * files.
+   *
+   * @param revision Release commit.
+   * @param previous Previous release.
+   * @param tagged   Commit of an existing tag with the same files, from checkTag().
+   * @param outdated Whether the branch has newer source history, from createRelease().
+   * @return Refs like refs/heads/main and refs/tags/1.2.0.
+   */
+  getRefsToPush(revision, previous, tagged = null, outdated = false) {
+    const { branch, tag } = this.options;
+    return [
+      branch && !tagged && !outdated && revision !== previous ? `refs/heads/${branch}` : "",
+      tag && !tagged ? `refs/tags/${tag}` : ""
+    ].filter(Boolean);
+  }
+  /**
+   * Push the release to the refs in one atomic push, never forced, so the
+   * branch only moves forward and a tag that was created in the meantime
+   * is never replaced. A dry run checks the push without writing.
+   *
+   * @param revision Release commit.
+   * @param refs     Refs from getRefsToPush().
+   * @return Pushed refs, empty in a dry run or without refs.
+   */
+  async push(revision, refs) {
+    const { gitUrl, dryRun } = this.options;
+    if (refs.length) {
+      await this.git({
+        args: [
+          "push",
+          "--no-verify",
+          "--atomic",
+          ...dryRun ? ["--dry-run"] : [],
+          gitUrl,
+          ...refs.map((ref) => `${revision}:${ref}`)
+        ]
+      });
+      this.logger.notice(dryRun ? `Dry run, skipped pushing ${refs.join(", ")}.` : `Pushed ${revision} to ${refs.join(", ")}.`);
+    } else {
+      this.logger.notice("No changes to push.");
+    }
+    return dryRun ? [] : refs;
+  }
+  async getDefaultMessage() {
+    const { tag, branch, sourceRef } = this.options;
+    const source = await this.git({
+      args: ["rev-parse", `${sourceRef}^{commit}`]
+    });
+    return `Release ${tag ?? branch} from ${source}`;
+  }
+  async getRepoRoot() {
+    this.repoRoot = this.repoRoot ?? (await this.runner({
+      args: ["rev-parse", "--show-toplevel"],
+      cwd: this.options.sourceDir
+    })).stdout.trim();
+    return this.repoRoot;
+  }
+  /**
+   * Run git in the source repository.
+   *
+   * @param input Command input without the working directory.
+   * @return Trimmed standard output.
+   */
+  async git(input) {
+    const cwd = await this.getRepoRoot();
+    this.logger.debug(redactUrls(`git ${input.args.join(" ")}`));
+    const { stdout } = await this.runner({ ...input, cwd });
+    return stdout.trim();
+  }
+};
+
+// ../../js/wp-release/dist/commands/deploy-git.js
+function getGitDeployInputFromArgs(values, positionals, cwd) {
+  return {
+    cwd,
+    sourceDir: getSourceDirArg(values, positionals),
+    gitUrl: getString(values, "git-url"),
+    branch: getString(values, "branch"),
+    tag: getString(values, "tag"),
+    splitPrefix: getString(values, "split-prefix"),
+    sourceRef: getString(values, "source-ref"),
+    ...getFileSelectionInput(values),
+    message: getString(values, "message"),
+    dryRun: getBoolean(values, "dry-run")
+  };
+}
+var deploy_git_default = {
+  name: "deploy-git",
+  usage: "deploy-git [<source-dir>] --git-url <url> [options]",
+  summary: "Deploy the files of a plugin, theme or package to a Git repository as a release commit.",
+  help: `Arguments:
+  <source-dir>            Directory with the files to release (default: .),
+                          also accepted as --source-dir <dir>
+
+Writes (none by default):
+  --branch <name>         Push the release to this branch, on top of its
+                          previous release
+  --tag <name>            Create this tag for the release, on top of --branch
+                          or the default branch of the repository
+
+Options:
+  --git-url <url>         Repository to deploy to
+  --split-prefix <dir>    Use the history of this directory of the source
+                          repository, from git subtree split, as the source
+                          history (default: the source commit)
+  --source-ref <ref>      Source commit (default: HEAD)
+  --distignore <file>     Ignore file (default: <source-dir>/.distignore when present)
+  --no-distignore         Don't read any ignore file
+  --exclude <patterns>    Extra gitignore-style patterns, comma-separated or repeated
+  --message <text>        Release commit message
+  --dry-run               Run everything except the push
+
+Each release is a commit with exactly the selected files, whose parents are
+the previous release and the source history. Pushes are never forced: the
+branch only moves forward, a release without changes isn't pushed again, an
+older build doesn't move a branch that has newer source history, a tag that
+already has the same files is reused, and a tag with other files
+fails with exit code 2 (delete it in the repository to release it again). The source directory must be inside a Git repository.
+Credentials come from git, like a token in the URL or an SSH key.
+
+Examples:
+  wp-release deploy-git build --git-url git@github.com:me/my-plugin-dist.git --branch main --tag 1.2.0
+      Release a build to a distribution repository and tag it
+  wp-release deploy-git packages/my-plugin --split-prefix packages/my-plugin --git-url \u2026 --branch main
+      Release a monorepo package with its own history`,
+  options: {
+    ...sourceDirArgs,
+    "git-url": { type: "string" },
+    branch: { type: "string" },
+    tag: { type: "string" },
+    "split-prefix": { type: "string" },
+    "source-ref": { type: "string" },
+    ...fileSelectionArgs,
+    message: { type: "string" },
+    "dry-run": { type: "boolean" }
+  },
+  async run({ values, positionals, cwd, logger: logger2 }) {
+    const options2 = resolveGitDeployOptions(getGitDeployInputFromArgs(values, positionals, cwd));
+    const result = await new GitDeploy(options2, logger2).run();
+    return { exitCode: 0, result };
+  }
+};
+
+// ../../js/wp-release/dist/github-actions-writer.js
 import { appendFileSync as appendFileSync2 } from "node:fs";
 function escapeData2(text) {
   return text.replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A");
@@ -25391,6 +25878,11 @@ var GitHubActionsWriter = class {
   }
 };
 
+// ../../js/wp-release/dist/changeset-release.js
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+var execFileAsync = promisify(execFile);
+
 // src/inputs.ts
 function getOptionalBooleanInput(name) {
   return getInput(name) ? getBooleanInput(name) : void 0;
@@ -25426,11 +25918,11 @@ function getDeployInput() {
 }
 
 // src/install-svn.ts
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-var execFileAsync = promisify(execFile);
+import { execFile as execFile2 } from "node:child_process";
+import { promisify as promisify2 } from "node:util";
+var execFileAsync2 = promisify2(execFile2);
 var runCommand = async (command, args) => {
-  await execFileAsync(command, args);
+  await execFileAsync2(command, args);
 };
 async function installSvn(input = {}) {
   const {
