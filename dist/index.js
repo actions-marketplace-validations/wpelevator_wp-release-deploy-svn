@@ -25920,12 +25920,12 @@ function defaultTagType(packagePath, type) {
 }
 
 // ../../js/wp-release/dist/versions.js
-var VERSION_PATTERN = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z.-]+))?$/;
+var VERSION_PATTERN = /^(?:0|[1-9]\d*)(?:\.(?:0|[1-9]\d*)){1,3}(?:-([0-9A-Za-z.-]+))?$/;
 function isVersion(version) {
   return VERSION_PATTERN.test(version);
 }
 function isPrerelease2(version) {
-  return Boolean(VERSION_PATTERN.exec(version)?.[4]);
+  return Boolean(VERSION_PATTERN.exec(version)?.[1]);
 }
 
 // ../../js/wp-release/dist/changeset-packages.js
