@@ -72,6 +72,7 @@ The action only deploys plugins. Themes are released by uploading a ZIP on WordP
 | `from-zip` | | Deploy the contents of this ZIP file, with a `{slug}/` root folder, instead of `source-dir`. |
 | `distignore` | `.distignore` in `source-dir` when present | Path to the ignore file, or `false` to not read one. |
 | `exclude` | | Extra gitignore-style patterns separated by commas or new lines, like `build/,assets/*,images/**/*`. |
+| `exclude-gitattributes` | `false` | Also exclude paths marked `export-ignore` by Git attributes. Requires `source-dir` to be inside a Git repository; ignored with `from-zip`. |
 | `svn-url` | `https://plugins.svn.wordpress.org/{slug}/` | SVN URL with a `{slug}` placeholder. |
 | `svn-username` | `SVN_USERNAME` env var | SVN username, only needed for the commit. |
 | `svn-password` | `SVN_PASSWORD` env var | SVN password, only needed for the commit. Pass it from a secret. |
@@ -126,7 +127,7 @@ A failed run adds the version mismatches, with their files and lines, or the err
 | Pre-release versions | Deployed unless the workflow skips them | Versions like `1.0.0-rc.1` can be tagged, and syncing one to `trunk/` warns |
 | Release ZIP | `generate-zip` input builds one from SVN trunk | Not part of the deploy; build the ZIP with `wp-release zip` in a separate step and pass it as `from-zip` to deploy exactly the released files |
 | Assets directory | `.wordpress-org`, synced whenever it exists | Synced only when `assets-dir` is set, and a missing directory is an error |
-| File selection | `.distignore` or `.gitattributes` `export-ignore`, ignored when `BUILD_DIR` is set | `.distignore` (or another file via `distignore`) plus `exclude` patterns, also applied to `source-dir` |
+| File selection | `.distignore` or `.gitattributes` `export-ignore`, ignored when `BUILD_DIR` is set | `.distignore` (or another file via `distignore`) plus `exclude` patterns; optionally honors `export-ignore` with `exclude-gitattributes: true` |
 | Asset MIME types | PNG, JPEG, GIF and SVG | The same formats |
 | Runtime | Bash with `rsync` and `svn` on Linux runners | Bundled Node.js without `rsync`; installs `svn` on Linux runners |
 
@@ -141,7 +142,7 @@ npm install --save-dev @wpelevator/wp-release
 npx wp-release deploy-svn dist --trunk --svn-tag 1.2.0 --assets-dir .wordpress-org --dry-run
 ```
 
-Remove `--dry-run` to commit. The inputs map to the flags of [`wp-release deploy-svn`](https://www.npmjs.com/package/@wpelevator/wp-release#deploy-to-svn): `source-dir` is the first argument, `trunk`, `readme-only`, `force` and `dry-run` are switches, and `slug`, `version`, `svn-tag`, `assets-dir`, `readme`, `from-zip`, `distignore`, `exclude`, `svn-url`, `svn-username` and `message` keep their names. `assets: false` is `--no-assets` and `distignore: false` is `--no-distignore`. Add `--json` to read the result from the output. The CLI needs Node.js 22.12 or later. Run `npx wp-release deploy-svn --help` for all options.
+Remove `--dry-run` to commit. The inputs map to the flags of [`wp-release deploy-svn`](https://www.npmjs.com/package/@wpelevator/wp-release#deploy-to-svn): `source-dir` is the first argument, `trunk`, `readme-only`, `force` and `dry-run` are switches, and `slug`, `version`, `svn-tag`, `assets-dir`, `readme`, `from-zip`, `distignore`, `exclude`, `exclude-gitattributes`, `svn-url`, `svn-username` and `message` keep their names. `assets: false` is `--no-assets` and `distignore: false` is `--no-distignore`. Add `--json` to read the result from the output. The CLI needs Node.js 22.12 or later. Run `npx wp-release deploy-svn --help` for all options.
 
 ## How it works
 
@@ -151,7 +152,7 @@ The action runs `dist/index.js`, a single file bundled with esbuild that include
 
 ## Development
 
-The source is TypeScript in `src/`. `dist/` is git-ignored in the monorepo. `npm run build` (part of the monorepo `npm run build` and `npm run release`) bundles it with esbuild using the published `wp-release` package version declared by this action. The package dependency is updated after that `wp-release` version is published, then the split-push workflow commits the bundle to the action's release repository, the same way the plugins ship their `build/` directories:
+The source is TypeScript in `src/`. `dist/` is git-ignored in the monorepo. `npm run build` (part of the monorepo `npm run build` and `npm run release`) bundles the pinned published `@wpelevator/wp-release` dependency (`0.9.0`). Update that dependency and the lockfile when adopting a later release; the split-push workflow commits the bundle to the action's release repository, the same way the plugins ship their `build/` directories:
 
 ```bash
 npm run build --workspace @wpelevator/wp-release-deploy-svn-action

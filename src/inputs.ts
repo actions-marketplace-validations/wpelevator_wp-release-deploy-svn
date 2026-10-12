@@ -42,6 +42,9 @@ export function getDeployInput(): DeployInput {
 		fromZip: input( 'from-zip' ),
 		distignore: 'false' === distignore ? false : distignore,
 		exclude: input( 'exclude' ),
+		excludeGitattributes: getOptionalBooleanInput(
+			'exclude-gitattributes'
+		),
 		svnUrl: input( 'svn-url' ),
 		svnUsername: input( 'svn-username' ),
 		svnPassword,
