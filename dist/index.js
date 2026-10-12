@@ -11100,7 +11100,7 @@ var require_mock_interceptor = __commonJS({
 var require_mock_client = __commonJS({
   "../../../node_modules/undici/lib/mock/mock-client.js"(exports, module) {
     "use strict";
-    var { promisify: promisify4 } = __require("node:util");
+    var { promisify: promisify3 } = __require("node:util");
     var Client = require_client();
     var { buildMockDispatch } = require_mock_utils();
     var {
@@ -11140,7 +11140,7 @@ var require_mock_client = __commonJS({
         return new MockInterceptor(opts, this[kDispatches]);
       }
       async [kClose]() {
-        await promisify4(this[kOriginalClose])();
+        await promisify3(this[kOriginalClose])();
         this[kConnected] = 0;
         this[kMockAgent][Symbols.kClients].delete(this[kOrigin]);
       }
@@ -11153,7 +11153,7 @@ var require_mock_client = __commonJS({
 var require_mock_pool = __commonJS({
   "../../../node_modules/undici/lib/mock/mock-pool.js"(exports, module) {
     "use strict";
-    var { promisify: promisify4 } = __require("node:util");
+    var { promisify: promisify3 } = __require("node:util");
     var Pool = require_pool();
     var { buildMockDispatch } = require_mock_utils();
     var {
@@ -11193,7 +11193,7 @@ var require_mock_pool = __commonJS({
         return new MockInterceptor(opts, this[kDispatches]);
       }
       async [kClose]() {
-        await promisify4(this[kOriginalClose])();
+        await promisify3(this[kOriginalClose])();
         this[kConnected] = 0;
         this[kMockAgent][Symbols.kClients].delete(this[kOrigin]);
       }
@@ -24177,6 +24177,13 @@ function formatFilename(format, values) {
 // ../../js/wp-release/dist/package-meta.js
 import { open as open2, readdir as readdir3, readFile as readFile3 } from "node:fs/promises";
 import { join as join3 } from "node:path";
+
+// ../../js/wp-release/dist/regexp.js
+function escapeRegExp(text) {
+  return text.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// ../../js/wp-release/dist/package-meta.js
 var HEADER_BYTES = 8192;
 var PLUGIN_HEADERS = [
   "Plugin Name",
@@ -24247,9 +24254,6 @@ function findFileHeaderLine(contents, header) {
 }
 function getLineNumber(contents, index) {
   return contents.slice(0, index).split("\n").length;
-}
-function escapeRegExp(text) {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function parseReadmeHeaders(contents) {
   const values = {};
@@ -25436,18 +25440,15 @@ function getGitTagVersion(input) {
   if (!gitTagFormat.includes("{version}")) {
     throw new ValidationError(`The git tag format "${gitTagFormat}" needs a {version} placeholder.`);
   }
-  const pattern = escapeRegExp2(gitTagFormat).replaceAll("\\{slug\\}", escapeRegExp2(slug)).replace("\\{version\\}", "(.+)");
+  const pattern = escapeRegExp(gitTagFormat).replaceAll("\\{slug\\}", escapeRegExp(slug)).replace("\\{version\\}", "(.+)");
   const version = new RegExp(`^${pattern}$`).exec(tag)?.[1];
   return version ? normalizeTag(version) : null;
 }
-function escapeRegExp2(text) {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
 function findConstantDefinitions(contents, name) {
-  const quotedName = `(['"])${escapeRegExp2(name)}\\1`;
+  const quotedName = `(['"])${escapeRegExp(name)}\\1`;
   const patterns = [
     new RegExp(`\\bdefine\\s*\\(\\s*${quotedName}\\s*,\\s*(['"])(.*?)\\2\\s*[,)]`, "g"),
-    new RegExp(`\\bconst\\s+()${escapeRegExp2(name)}\\s*=\\s*(['"])(.*?)\\2\\s*;`, "g")
+    new RegExp(`\\bconst\\s+()${escapeRegExp(name)}\\s*=\\s*(['"])(.*?)\\2\\s*;`, "g")
   ];
   return patterns.flatMap((pattern) => [...contents.matchAll(pattern)]).sort((a, b) => (a.index ?? 0) - (b.index ?? 0)).map((match) => ({
     value: match[3] ?? "",
@@ -27109,17 +27110,14 @@ var GitHubActionsWriter = class {
   }
 };
 
-// ../../js/wp-release/dist/changeset-release.js
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+// ../../js/wp-release/dist/changeset-dependents.js
 var import_satisfies = __toESM(require_satisfies(), 1);
 var import_valid = __toESM(require_valid(), 1);
-var execFileAsync = promisify(execFile);
 
 // ../../js/wp-release/dist/github.js
-import { execFile as execFile2 } from "node:child_process";
-import { promisify as promisify2 } from "node:util";
-var execFileAsync2 = promisify2(execFile2);
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+var execFileAsync = promisify(execFile);
 
 // src/inputs.ts
 function getOptionalBooleanInput(name) {
@@ -27159,11 +27157,11 @@ function getDeployInput() {
 }
 
 // src/install-svn.ts
-import { execFile as execFile3 } from "node:child_process";
-import { promisify as promisify3 } from "node:util";
-var execFileAsync3 = promisify3(execFile3);
+import { execFile as execFile2 } from "node:child_process";
+import { promisify as promisify2 } from "node:util";
+var execFileAsync2 = promisify2(execFile2);
 var runCommand = async (command, args) => {
-  await execFileAsync3(command, args);
+  await execFileAsync2(command, args);
 };
 async function installSvn(input = {}) {
   const {
