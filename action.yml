@@ -42,6 +42,9 @@ inputs:
   exclude:
     description: 'Extra gitignore-style patterns to leave out, separated by commas or new lines, like "build/,assets/*,images/**/*".'
     default: ''
+  exclude-gitattributes:
+    description: 'Also exclude paths marked export-ignore in Git attributes. Requires source-dir to be inside a Git repository; ignored with from-zip.'
+    default: 'false'
   svn-url:
     description: 'SVN repository URL with a {slug} placeholder. Defaults to https://plugins.svn.wordpress.org/{slug}/.'
     default: ''

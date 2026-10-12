@@ -117,6 +117,12 @@ test( 'reads the file selection inputs', () => {
 		'The exclude input should be passed through for wp-release to parse.'
 	);
 	assert.equal(
+		withEnv( { 'INPUT_EXCLUDE-GITATTRIBUTES': 'true' }, getDeployInput )
+			.excludeGitattributes,
+		true,
+		'The exclude-gitattributes input should enable Git attribute exclusions.'
+	);
+	assert.equal(
 		withEnv( { INPUT_DISTIGNORE: '.release-ignore' }, getDeployInput )
 			.distignore,
 		'.release-ignore',

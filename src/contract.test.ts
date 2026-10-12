@@ -99,6 +99,7 @@ const cases: Array< {
 			'--no-distignore',
 			'--exclude',
 			'build/,tests/',
+			'--exclude-gitattributes',
 			'--dry-run',
 		],
 		action: {
@@ -108,6 +109,7 @@ const cases: Array< {
 			INPUT_README: 'readme.md',
 			INPUT_DISTIGNORE: 'false',
 			INPUT_EXCLUDE: 'build/,tests/',
+			'INPUT_EXCLUDE-GITATTRIBUTES': 'true',
 			'INPUT_DRY-RUN': 'true',
 		},
 	},
