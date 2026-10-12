@@ -152,7 +152,7 @@ The action runs `dist/index.js`, a single file bundled with esbuild that include
 
 ## Development
 
-The source is TypeScript in `src/`. `dist/` is git-ignored in the monorepo. `npm run build` (part of the monorepo `npm run build` and `npm run release`) bundles the pinned published `@wpelevator/wp-release` dependency (`0.9.0`). Update that dependency and the lockfile when adopting a later release; the split-push workflow commits the bundle to the action's release repository, the same way the plugins ship their `build/` directories:
+The source is TypeScript in `src/`. `dist/` is git-ignored in the monorepo. `npm run build` (part of the monorepo `npm run build` and `npm run release`) bundles the `@wpelevator/wp-release` dependency at the version that the action's `package.json` pins (`0.9.0`). The dependents policy of the monorepo release configuration re-releases the actions whenever a later version falls outside their pins and rewrites them, so they don't need a manual update, while a drifting pin selects a registry install instead and `changeset-status` warns until it resolves the package again; the split-push workflow commits the bundle to the action's release repository, the same way the plugins ship their `build/` directories:
 
 ```bash
 npm run build --workspace @wpelevator/wp-release-deploy-svn-action
