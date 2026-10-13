@@ -36,7 +36,7 @@ jobs:
 
       # Stable releases: sync the build to trunk, tag it and update the assets.
       - if: github.event_name == 'release' && ! github.event.release.prerelease
-        uses: wpelevator/wp-release-deploy-svn@0.7.0
+        uses: wpelevator/wp-release-deploy-svn@0.7.1
         with:
           source-dir: dist
           trunk: true
@@ -47,7 +47,7 @@ jobs:
 
       # Main branch pushes: update the readme and assets between releases.
       - if: github.event_name == 'push'
-        uses: wpelevator/wp-release-deploy-svn@0.7.0
+        uses: wpelevator/wp-release-deploy-svn@0.7.1
         with:
           source-dir: dist
           readme-only: true
@@ -68,7 +68,7 @@ With a release config that defines `deploy.svn` targets, deploy the package and 
 
 ```yaml
       - id: deploy
-        uses: wpelevator/wp-release-deploy-svn@0.7.0
+        uses: wpelevator/wp-release-deploy-svn@0.7.1
         with:
           release-ref: ${{ github.ref }}
           package: plugins/my-plugin
