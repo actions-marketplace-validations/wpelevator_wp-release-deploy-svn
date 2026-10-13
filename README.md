@@ -4,13 +4,13 @@
 
 GitHub Action that deploys a WordPress plugin to the WordPress.org plugin SVN repository using [`@wpelevator/wp-release`](https://www.npmjs.com/package/@wpelevator/wp-release). It's named after the [`wp-release deploy-svn`](https://www.npmjs.com/package/@wpelevator/wp-release#deploy-to-svn) command that it runs.
 
-**Status:** first release (0.x). Boolean inputs must be `true` or `false`; anything else fails the run.
-
 Input names follow the CLI flags of [`wp-release deploy-svn`](https://www.npmjs.com/package/@wpelevator/wp-release#deploy-to-svn), and the `SVN_USERNAME`/`SVN_PASSWORD` secrets match the 10up WordPress.org actions. See [Compared with the 10up actions](#compared-with-the-10up-actions) for the differences and how to migrate.
 
 It's built on current GitHub Actions features, so problems show up where you look for them instead of only in the log: a version mismatch is an [annotation](#annotations-and-job-summary) on the exact file and line, and every deploy writes a job summary with the version, the commit and the SVN changes.
 
 ## Usage
+
+Use `true` or `false` for boolean inputs; the action validates these values before running the command.
 
 These actions require a runner with the Node.js 24 action runtime. Keep self-hosted runners updated before using them.
 
