@@ -12,6 +12,10 @@ It's built on current GitHub Actions features, so problems show up where you loo
 
 ## Usage
 
+These actions require a runner with the Node.js 24 action runtime. Keep self-hosted runners updated before using them.
+
+Pin `uses:` to the latest released version from the [releases page](https://github.com/wpelevator/wp-release-deploy-svn/releases). Upgrades are intentionally manual: floating major or minor tags are not published.
+
 ```yaml
 on:
   release:
@@ -22,6 +26,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     concurrency: wporg-deploy
     steps:
       - uses: actions/checkout@v7
@@ -30,7 +36,7 @@ jobs:
 
       # Stable releases: sync the build to trunk, tag it and update the assets.
       - if: github.event_name == 'release' && ! github.event.release.prerelease
-        uses: wpelevator/wp-release-deploy-svn@0.5.0
+        uses: wpelevator/wp-release-deploy-svn@0.6.5
         with:
           source-dir: dist
           trunk: true
@@ -41,7 +47,7 @@ jobs:
 
       # Main branch pushes: update the readme and assets between releases.
       - if: github.event_name == 'push'
-        uses: wpelevator/wp-release-deploy-svn@0.5.0
+        uses: wpelevator/wp-release-deploy-svn@0.6.5
         with:
           source-dir: dist
           readme-only: true
@@ -58,13 +64,11 @@ The action only deploys plugins. Themes are released by uploading a ZIP on WordP
 
 ### Configured release deployments
 
-The configured deployment inputs are available on `main` until the next action release. Pin the released version once it is available.
-
 With a release config that defines `deploy.svn` targets, deploy the package and version named by a release tag:
 
 ```yaml
       - id: deploy
-        uses: wpelevator/wp-release-deploy-svn@main
+        uses: wpelevator/wp-release-deploy-svn@0.6.5
         with:
           release-ref: ${{ github.ref }}
           package: plugins/my-plugin
@@ -78,6 +82,8 @@ The config supplies the package directory, file selection and SVN targets. Stabl
 Set `list: true` to preview the targets without installing or running SVN. The `packages` JSON output is the same plan as `wp-release deploy-svn --release-ref <ref> --list`; use `${{ fromJSON( steps.deploy.outputs.packages ) }}` as a matrix `include` value. `dry-run: true` runs the planned deploys without committing. A target failure is included in `deploys`, later targets still run, and the action fails after collecting their outcomes.
 
 With `release-ref`, the repository-name `slug` input and the default `readme.txt` input are ignored. Other single-plugin source, write, file selection and target inputs conflict with configured deployment and fail as they do in the CLI. Credentials, `force` and `dry-run` work in both modes.
+
+The action itself needs only `contents: read` for checkout; SVN deployment uses the supplied WordPress.org credentials. Set this permission on jobs using the step examples in this README.
 
 ## Inputs
 
