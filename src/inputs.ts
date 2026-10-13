@@ -53,3 +53,73 @@ export function getDeployInput(): DeployInput {
 		dryRun: getOptionalBooleanInput( 'dry-run' ),
 	};
 }
+
+/**
+ * Map the single-plugin and configured deployment inputs to CLI flags.
+ * The repository slug and default readme belong only to single-plugin mode.
+ *
+ * @param input Single-plugin options and credentials.
+ * @return Arguments after deploy-svn.
+ */
+export function getDeployArgs(
+	input: DeployInput = getDeployInput()
+): string[] {
+	const ref = getInput( 'release-ref' );
+	const args: string[] = [];
+	const values: Array< [ string, string | undefined ] > = [
+		[ 'release-ref', ref ],
+		[ 'config', getInput( 'config' ) ],
+		[ 'tag-format', getInput( 'tag-format' ) ],
+		[ 'source-dir', input.sourceDir ],
+		[ 'slug', ref ? undefined : input.slug ],
+		[ 'version', input.version ],
+		[ 'svn-tag', input.svnTag ],
+		[ 'assets-dir', input.assetsDir ],
+		[
+			'readme',
+			ref && 'readme.txt' === input.readme ? undefined : input.readme,
+		],
+		[ 'from-zip', input.fromZip ],
+		[
+			'distignore',
+			false === input.distignore ? undefined : input.distignore,
+		],
+		[
+			'exclude',
+			Array.isArray( input.exclude )
+				? input.exclude.join( '\n' )
+				: input.exclude,
+		],
+		[ 'svn-url', input.svnUrl ],
+		[ 'svn-username', input.svnUsername ],
+		[ 'message', input.message ],
+	];
+	const flags: Array< [ string, boolean | undefined ] > = [
+		[ 'trunk', input.trunk ],
+		[ 'readme-only', input.readmeOnly ],
+		[ 'no-assets', false === input.assets ],
+		[ 'no-distignore', false === input.distignore ],
+		[ 'exclude-gitattributes', input.excludeGitattributes ],
+		[ 'force', input.force ],
+		[ 'dry-run', input.dryRun ],
+		[ 'list', getOptionalBooleanInput( 'list' ) ],
+	];
+
+	values.forEach( ( [ name, value ] ) => {
+		if ( value ) {
+			args.push( `--${ name }`, value );
+		}
+	} );
+	flags.forEach( ( [ name, enabled ] ) => {
+		if ( enabled ) {
+			args.push( `--${ name }` );
+		}
+	} );
+	getInput( 'package' )
+		.split( '\n' )
+		.map( ( name ) => name.trim() )
+		.filter( Boolean )
+		.forEach( ( name ) => args.push( '--package', name ) );
+
+	return args;
+}

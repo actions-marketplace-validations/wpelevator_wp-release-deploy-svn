@@ -56,19 +56,47 @@ The action runs on the GitHub Actions Node.js 24 runtime. Deploys need the `svn`
 
 The action only deploys plugins. Themes are released by uploading a ZIP on WordPress.org.
 
+### Configured release deployments
+
+The configured deployment inputs are available on `main` until the next action release. Pin the released version once it is available.
+
+With a release config that defines `deploy.svn` targets, deploy the package and version named by a release tag:
+
+```yaml
+      - id: deploy
+        uses: wpelevator/wp-release-deploy-svn@main
+        with:
+          release-ref: ${{ github.ref }}
+          package: plugins/my-plugin
+          config: release/wp-release.config.mjs
+          svn-username: ${{ secrets.SVN_USERNAME }}
+          svn-password: ${{ secrets.SVN_PASSWORD }}
+```
+
+The config supplies the package directory, file selection and SVN targets. Stable releases sync trunk, create a tag and sync configured assets; pre-releases create only the tag. `package` accepts identifiers or paths, one per line, and `tag-format` overrides the config's release tag format. Branch refs produce no SVN deploys, matching the CLI.
+
+Set `list: true` to preview the targets without installing or running SVN. The `packages` JSON output is the same plan as `wp-release deploy-svn --release-ref <ref> --list`; use `${{ fromJSON( steps.deploy.outputs.packages ) }}` as a matrix `include` value. `dry-run: true` runs the planned deploys without committing. A target failure is included in `deploys`, later targets still run, and the action fails after collecting their outcomes.
+
+With `release-ref`, the repository-name `slug` input and the default `readme.txt` input are ignored. Other single-plugin source, write, file selection and target inputs conflict with configured deployment and fail as they do in the CLI. Credentials, `force` and `dry-run` work in both modes.
+
 ## Inputs
 
 | Input | Default | Description |
 |---|---|---|
+| `release-ref` | | Release tag ref to deploy to the configured SVN targets instead of a single plugin. |
+| `package` | | With `release-ref`, deploy only these package identifiers or paths, one per line. |
+| `list` | `false` | With `release-ref`, list the configured deploys without running them. |
+| `config` | conventional config in the repository root | Path to a JavaScript release config file. |
+| `tag-format` | config `tagFormat` | Release tag format for reading `release-ref`. |
 | `source-dir` | `.` | Directory with the plugin files to deploy. |
-| `slug` | repository name | WordPress.org plugin slug. |
+| `slug` | repository name | WordPress.org plugin slug for single-plugin mode; ignored with `release-ref`. |
 | `version` | `svn-tag`, then the `Version` header | Version to check against the headers. |
 | `trunk` | `false` | Sync the full build to `trunk/`. |
 | `readme-only` | `false` | Sync only the readme to `trunk/`. Can't be combined with `svn-tag`. |
 | `svn-tag` | | Version to create as `tags/<version>`. With `trunk`, the tag is a copy of the synced `trunk/`. Without it, the tag is built from the source files and `trunk/` is left alone, for pre-release tags. A leading `v` is stripped. Empty disables tagging. |
 | `assets-dir` | | Directory with the banners, icons and screenshots to sync to the SVN `assets/` directory. Assets aren't deployed unless this is set, and the directory must exist. |
 | `assets` | | Set to `false` to skip the `assets-dir` sync for one run. |
-| `readme` | `readme.txt` | Readme file name. |
+| `readme` | `readme.txt` | Readme file name. The default is ignored with `release-ref`; a custom name conflicts with configured deployment. |
 | `from-zip` | | Deploy the contents of this ZIP file, with a `{slug}/` root folder, instead of `source-dir`. |
 | `distignore` | `.distignore` in `source-dir` when present | Path to the ignore file, or `false` to not read one. |
 | `exclude` | | Extra gitignore-style patterns separated by commas or new lines, like `build/,assets/*,images/**/*`. |
@@ -90,6 +118,11 @@ Credentials are passed either as the `svn-username` and `svn-password` inputs or
 | `version` | Deployed version, empty when unknown, like for assets-only deploys. |
 | `committed` | Whether a commit was made. |
 | `revision` | SVN revision of the commit, empty when nothing was committed. |
+| `result` | Full command result as JSON: a single deploy, configured package plan or configured deployment outcomes. |
+| `packages` | JSON array of configured package plans with `list`; otherwise an empty array. |
+| `deploys` | JSON array of configured deployment outcomes, including errors; otherwise an empty array. |
+
+The existing `slug`, `version`, `committed` and `revision` outputs describe a single-plugin deployment and are empty with `release-ref`. Configured runs report each target in `deploys`, with its package, version, target, target ref and result or error.
 
 ## Annotations and job summary
 
@@ -110,7 +143,7 @@ Each deploy also adds a section to the job summary of the run:
 - **Result**: the revision, linked to its WordPress.org changeset, or that it was a dry run or had no changes.
 - **SVN changes** in a collapsed table, so a dry run shows exactly what a deploy would commit.
 
-A failed run adds the version mismatches, with their files and lines, or the error to the summary.
+A failed run adds the version mismatches, with their files and lines, or the error to the summary. Configured deployment adds a summary for each target and keeps running the later targets after a failure.
 
 ## Compared with the 10up actions
 
@@ -146,13 +179,13 @@ Remove `--dry-run` to commit. The inputs map to the flags of [`wp-release deploy
 
 ## How it works
 
-[`src/run.ts`](src/run.ts) reads the inputs with [`@actions/core`](https://github.com/actions/toolkit/tree/main/packages/core), maps them to [`@wpelevator/wp-release`](https://www.npmjs.com/package/@wpelevator/wp-release) options, installs `svn` when needed and runs `SvnDeploy`, which logs the planned SVN changes and the SVN status in collapsible groups. The action passes the `GitHubActionsWriter` of `wp-release` to its logger, so version mismatches fail the run with an annotation on the file and line of each version that doesn't match, and the deploy writes the [job summary](#annotations-and-job-summary). GitHub-specific code stays in the action, so `wp-release` doesn't depend on the Actions toolkit. Contract tests check that the inputs, with the `action.yml` defaults, resolve to the same options as the matching `wp-release deploy-svn` flags.
+[`src/run.ts`](src/run.ts) reads the inputs with [`@actions/core`](https://github.com/actions/toolkit/tree/main/packages/core), maps them to CLI flags and runs `execute( 'deploy-svn', args, context )` from [`@wpelevator/wp-release`](https://www.npmjs.com/package/@wpelevator/wp-release), so single-plugin and configured deployments share the CLI's parsing, validation, planning and execution. The action supplies an SVN command runner that installs `svn` before its first command, once for all targets. Plans and runs without writes don't install SVN. The action passes the `GitHubActionsWriter` of `wp-release` to its logger, so version mismatches fail the run with an annotation on the file and line of each version that doesn't match, and the deploy writes the [job summary](#annotations-and-job-summary). GitHub-specific code stays in the action, so `wp-release` doesn't depend on the Actions toolkit. Contract tests check that the inputs, with the `action.yml` defaults, resolve to the same options as the matching `wp-release deploy-svn` flags.
 
 The action runs `dist/index.js`, a single file bundled with esbuild that includes `wp-release` and all other dependencies, so nothing is installed from npm when the action runs. The tooling version is fixed by the action ref you pin.
 
 ## Development
 
-The source is TypeScript in `src/`. `dist/` is git-ignored in the monorepo. `npm run build` (part of the monorepo `npm run build` and `npm run release`) bundles the `@wpelevator/wp-release` dependency at the version that the action's `package.json` pins (`0.9.0`). The dependents policy of the monorepo release configuration re-releases the actions whenever a later version falls outside their pins and rewrites them, so they don't need a manual update, while a drifting pin selects a registry install instead and `changeset-status` warns until it resolves the package again; the split-push workflow commits the bundle to the action's release repository, the same way the plugins ship their `build/` directories:
+The source is TypeScript in `src/`. `dist/` is git-ignored in the monorepo. `npm run build` (part of the monorepo `npm run build` and `npm run release`) bundles the `@wpelevator/wp-release` dependency at the version that the action's `package.json` pins. The dependents policy of the monorepo release configuration re-releases the actions whenever a later version falls outside their pins and rewrites them, so they don't need a manual update, while a drifting pin selects a registry install instead and `changeset-status` warns until it resolves the package again; the split-push workflow commits the bundle to the action's release repository, the same way the plugins ship their `build/` directories:
 
 ```bash
 npm run build --workspace @wpelevator/wp-release-deploy-svn-action

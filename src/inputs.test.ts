@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { getDeployInput } from './inputs.ts';
+import { getDeployInput, getDeployArgs } from './inputs.ts';
 import { withEnv } from './test-env.ts';
 
 test( 'reads write flags from inputs', () => {
@@ -127,5 +127,43 @@ test( 'reads the file selection inputs', () => {
 			.distignore,
 		'.release-ignore',
 		'Other distignore values should be passed through as a path.'
+	);
+} );
+
+test( 'maps configured deployment inputs to CLI flags', () => {
+	assert.deepEqual(
+		withEnv(
+			{
+				'INPUT_RELEASE-REF': 'refs/tags/plugins/alpha/1.2.0',
+				INPUT_PACKAGE: 'plugins/alpha\n plugins/beta \n',
+				INPUT_CONFIG: 'release/custom.mjs',
+				'INPUT_TAG-FORMAT': '{name}@{version}',
+				INPUT_LIST: 'true',
+				INPUT_SLUG: 'repository-default',
+				INPUT_README: 'readme.txt',
+				'INPUT_DRY-RUN': 'true',
+			},
+			getDeployArgs
+		),
+		[
+			'--release-ref',
+			'refs/tags/plugins/alpha/1.2.0',
+			'--config',
+			'release/custom.mjs',
+			'--tag-format',
+			'{name}@{version}',
+			'--dry-run',
+			'--list',
+			'--package',
+			'plugins/alpha',
+			'--package',
+			'plugins/beta',
+		],
+		'Configured deployment should pass the CLI flags and leave out the single-plugin defaults.'
+	);
+	assert.throws(
+		() => withEnv( { INPUT_LIST: 'ture' }, getDeployArgs ),
+		/list/,
+		'A malformed list input should fail instead of starting a deployment.'
 	);
 } );
