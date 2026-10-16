@@ -6,11 +6,26 @@ branding:
   color: 'blue'
 
 inputs:
+  release-ref:
+    description: 'Release tag ref to deploy to the configured SVN targets, such as refs/tags/plugins/my-plugin/1.2.0. Takes source files, writes and targets from the release config instead of the single-plugin inputs.'
+    default: ''
+  package:
+    description: 'With release-ref, deploy only these package identifiers or paths, one per line.'
+    default: ''
+  list:
+    description: 'With release-ref, list the configured deploys without running them. Sets the packages output for a CI matrix.'
+    default: 'false'
+  config:
+    description: 'Path to a JavaScript release config file. Defaults to wp-release.config.js, .mjs or .cjs in the repository root.'
+    default: ''
+  tag-format:
+    description: 'Release tag format that replaces tagFormat from the release config for this run.'
+    default: ''
   source-dir:
     description: 'Directory with the plugin files to deploy. Defaults to the repository root.'
     default: ''
   slug:
-    description: 'WordPress.org slug.'
+    description: 'WordPress.org slug for single-plugin deploys; ignored with release-ref.'
     default: ${{ github.event.repository.name }}
   version:
     description: 'Version to check against the headers. Defaults to svn-tag, then to the Version header of the deployed files.'
@@ -31,7 +46,7 @@ inputs:
     description: 'Directory with the banners, icons and screenshots to sync to the SVN assets/ directory. Assets are not deployed unless this is set.'
     default: ''
   readme:
-    description: 'Readme file name.'
+    description: 'Readme file name. The default is ignored with release-ref; a custom name conflicts with configured deployment.'
     default: 'readme.txt'
   from-zip:
     description: 'Deploy the contents of this ZIP file, with a {slug}/ root folder, instead of source-dir.'
@@ -42,6 +57,9 @@ inputs:
   exclude:
     description: 'Extra gitignore-style patterns to leave out, separated by commas or new lines, like "build/,assets/*,images/**/*".'
     default: ''
+  exclude-gitattributes:
+    description: 'Also exclude paths marked export-ignore in Git attributes. Requires source-dir to be inside a Git repository; ignored with from-zip.'
+    default: 'false'
   svn-url:
     description: 'SVN repository URL with a {slug} placeholder. Defaults to https://plugins.svn.wordpress.org/{slug}/.'
     default: ''
@@ -63,13 +81,20 @@ inputs:
 
 outputs:
   slug:
-    description: 'Resolved WordPress.org slug.'
+    description: 'Resolved WordPress.org slug for a single-plugin deploy; empty with release-ref.'
   version:
-    description: 'Deployed version, empty when unknown, like for assets-only deploys.'
+    description: 'Deployed version for a single-plugin deploy; empty when unknown or with release-ref.'
   committed:
-    description: 'Whether a commit was made.'
+    description: 'Whether a commit was made for a single-plugin deploy; empty with release-ref.'
   revision:
-    description: 'SVN revision of the commit, empty when nothing was committed.'
+    description: 'SVN revision for a single-plugin deploy; empty without a commit or with release-ref.'
+
+  result:
+    description: 'Full command result as JSON: a single deploy, configured package plan or configured deployment outcomes.'
+  packages:
+    description: 'JSON array of configured package plans with list; otherwise an empty array.'
+  deploys:
+    description: 'JSON array of configured deployment outcomes, including errors; otherwise an empty array.'
 
 runs:
   using: 'node24'

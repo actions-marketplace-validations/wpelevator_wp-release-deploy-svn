@@ -1,37 +1,44 @@
-import { info, setOutput } from '@actions/core';
+import { getInput, info, setOutput } from '@actions/core';
 import {
 	GitHubActionsWriter,
 	Logger,
-	SvnDeploy,
+	execute,
 	logError,
 	resolveDeployOptions,
 } from '@wpelevator/wp-release';
-import { getDeployInput } from './inputs.ts';
-import { installSvn } from './install-svn.ts';
+import { getDeployArgs, getDeployInput } from './inputs.ts';
+import { createActionSvnRunner } from './install-svn.ts';
 
 const logger = new Logger( { writer: new GitHubActionsWriter() } );
 
 try {
-	const options = resolveDeployOptions( getDeployInput() );
-	const deploy = new SvnDeploy( options, logger );
+	const input = getDeployInput();
+	const configured = Boolean( getInput( 'release-ref' ) );
+	const options = configured ? undefined : resolveDeployOptions( input );
 
-	logger.info(
-		`Deploying plugin "${ options.slug }" to ${ options.svnUrl }`
-	);
-
-	setOutput( 'slug', options.slug );
-
-	if ( deploy.hasWrites() ) {
-		await installSvn( { log: info } );
+	if ( input.svnPassword ) {
+		process.env.SVN_PASSWORD = input.svnPassword;
 	}
 
-	const result = await deploy.run();
+	const { result, exitCode } = await execute(
+		'deploy-svn',
+		getDeployArgs( input ),
+		{
+			cwd: input.cwd ?? process.cwd(),
+			logger,
+			svnRunner: createActionSvnRunner( { log: info } ),
+		}
+	);
 
-	setOutput( 'version', result.version ?? '' );
-	setOutput( 'committed', result.committed );
-	setOutput( 'revision', result.revision ?? '' );
+	setOutput( 'slug', options?.slug ?? '' );
+	setOutput( 'version', 'version' in result ? result.version ?? '' : '' );
+	setOutput( 'committed', 'committed' in result ? result.committed : '' );
+	setOutput( 'revision', 'revision' in result ? result.revision ?? '' : '' );
+	setOutput( 'result', result );
+	setOutput( 'packages', 'packages' in result ? result.packages : [] );
+	setOutput( 'deploys', 'deploys' in result ? result.deploys : [] );
+	process.exitCode = exitCode;
 } catch ( error ) {
-	// Logs each version mismatch as an annotation on its file and line.
 	logError( logger, error, 'WP Release Deploy SVN' );
 	process.exitCode = 1;
 }

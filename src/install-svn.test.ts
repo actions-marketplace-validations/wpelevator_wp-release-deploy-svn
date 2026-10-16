@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { installSvn } from './install-svn.ts';
+import { installSvn, createActionSvnRunner } from './install-svn.ts';
 
 function createRunner( hasSvn: boolean ) {
 	const calls: string[] = [];
@@ -59,5 +59,33 @@ test( 'fails with a clear message on other systems', async () => {
 		installSvn( { run, platform: 'darwin' } ),
 		/Install Subversion on the darwin runner/,
 		'Runners without apt-get should explain how to get svn.'
+	);
+} );
+
+test( 'checks SVN lazily and only once for multiple commands', async () => {
+	const commands: string[] = [];
+	const runner = createActionSvnRunner(
+		{
+			run: async ( command ) => {
+				commands.push( command );
+			},
+		},
+		async ( input ) => {
+			commands.push( input.args.join( ' ' ) );
+			return { stdout: '', stderr: '' };
+		}
+	);
+
+	assert.deepEqual(
+		commands,
+		[],
+		'Creating the runner should not check or install SVN for a plan or a run without writes.'
+	);
+	await runner( { args: [ 'info' ] } );
+	await runner( { args: [ 'status' ] } );
+	assert.deepEqual(
+		commands,
+		[ 'svn', 'info', 'status' ],
+		'The installation check should precede the first SVN command and run only once.'
 	);
 } );

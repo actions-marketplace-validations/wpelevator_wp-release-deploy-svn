@@ -1,5 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { createSvnRunner } from '@wpelevator/wp-release';
+import type { SvnRunner } from '@wpelevator/wp-release';
 
 /**
  * Run a command without a shell. Rejects when it fails or doesn't exist.
@@ -71,4 +73,26 @@ export async function installSvn(
 			'subversion',
 		] );
 	}
+}
+
+/**
+ * Install SVN on the first command, once for all targets in the action.
+ * Plans and deployments without writes never call this runner.
+ *
+ * @param input  Installation dependencies and logger.
+ * @param runner SVN command runner.
+ * @return Runner that checks SVN before executing its first command.
+ */
+export function createActionSvnRunner(
+	input: InstallSvnInput = {},
+	runner: SvnRunner = createSvnRunner()
+): SvnRunner {
+	let ready: Promise< void > | undefined;
+
+	return async ( command ) => {
+		ready ??= installSvn( input );
+		await ready;
+
+		return runner( command );
+	};
 }

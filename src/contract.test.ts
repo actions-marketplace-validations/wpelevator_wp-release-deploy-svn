@@ -9,7 +9,7 @@ import {
 	getDeployInputFromArgs,
 	resolveDeployOptions,
 } from '@wpelevator/wp-release';
-import { getDeployInput } from './inputs.ts';
+import { getDeployInput, getDeployArgs } from './inputs.ts';
 import { withEnv } from './test-env.ts';
 
 /**
@@ -99,6 +99,7 @@ const cases: Array< {
 			'--no-distignore',
 			'--exclude',
 			'build/,tests/',
+			'--exclude-gitattributes',
 			'--dry-run',
 		],
 		action: {
@@ -108,6 +109,7 @@ const cases: Array< {
 			INPUT_README: 'readme.md',
 			INPUT_DISTIGNORE: 'false',
 			INPUT_EXCLUDE: 'build/,tests/',
+			'INPUT_EXCLUDE-GITATTRIBUTES': 'true',
 			'INPUT_DRY-RUN': 'true',
 		},
 	},
@@ -150,6 +152,16 @@ test( 'the CLI flags and action inputs resolve to the same options', () => {
 	mkdirSync( join( cwd, '.wordpress-org' ) );
 
 	cases.forEach( ( { name, cli, action } ) => {
+		const args = withEnv(
+			{ ...getActionDefaults(), ...action },
+			getDeployArgs
+		);
+
+		assert.deepEqual(
+			resolveCli( args, cwd ),
+			resolveAction( action, cwd ),
+			`The action CLI adapter should preserve the library options for ${ name }.`
+		);
 		assert.deepEqual(
 			resolveAction( action, cwd ),
 			withEnv( {}, () => resolveCli( cli, cwd ) ),

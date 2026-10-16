@@ -1,13 +1,13 @@
 {
 	"private": true,
 	"name": "@wpelevator/wp-release-deploy-svn-action",
-	"version": "0.5.2",
+	"version": "0.7.2",
 	"description": "GitHub Action to deploy WordPress plugins and themes to WordPress.org SVN",
 	"license": "MIT",
 	"type": "module",
 	"dependencies": {
 		"@actions/core": "^3.0.1",
-		"@wpelevator/wp-release": "0.7.0"
+		"@wpelevator/wp-release": "0.17.0"
 	},
 	"devDependencies": {
 		"@types/node": "^22.20.5",
@@ -19,7 +19,7 @@
 	"scripts": {
 		"build": "node build.js",
 		"lint": "npm-run-all lint:*",
-		"lint:js": "wp-scripts lint-js build.js src",
+		"lint:js": "wp-scripts lint-js",
 		"lint:types": "tsc -p tsconfig.json",
 		"format": "wp-scripts format build.js src",
 		"test": "node --test"
